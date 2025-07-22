@@ -1,2 +1,2 @@
 # intranet-cms-backend
-Intranet-cms-backend
+department-dashboard-backend
