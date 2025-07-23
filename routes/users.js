@@ -55,7 +55,7 @@ router.post("/adminlogin", async (req, res) => {
 const getUserPassword = (userid) => {
   return new Promise((resolve, reject) => {
     mysqlConnection.query(
-      "SELECT USER_PWD FROM INTARNET_USER_LOGIN WHERE EMPID = ?",
+      "SELECT USER_PWD FROM balcorpdb.intranet_user_login WHERE EMPID = ?",
       [userid],
       (err, results) => {
         if (err) {
@@ -948,13 +948,14 @@ router.get("/kpi/:empid", async (req, res) => {
 });
 
 // Submit HR Dashboard Form
-router.post("/hr-dashboard", async (req, res) => {
-  const { month, kpi_desc, uom, hr_target, actual_data } = req.body;
+const uploadHR = multer();
+router.post("/hr-dashboard", uploadHR.none(), async (req, res) => {
+  const { date, plant_id, func_id, kpi_code, uom, hr_target, actual_data,userId } = req.body;
 
   try {
     mysqlConnection.query(
-      "CALL balcorpdb.SP_KPI_MASTER_INSERT(?, ?, ?, ?, ?)",
-      [ month, kpi_desc, uom, hr_target, actual_data],
+      "CALL balcorpdb.SP_KPI_DAILY_ACTUAL_INSERT(?, ?, ?, ?, ?, ?, ?, ?)",
+      [ date, plant_id, func_id, kpi_code, uom, hr_target, actual_data, userId ],
       async (err, results) => {
         if (err) {
           return res.status(500).json({ error: err.message });
@@ -962,7 +963,7 @@ router.post("/hr-dashboard", async (req, res) => {
 
          return res.status(200).json({
             status: "success",
-            message: "Subitted successfully!",
+            message: "Submitted successfully!",
             data: results[0],
           });
       }
