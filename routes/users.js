@@ -36,7 +36,7 @@ router.post("/adminlogin", async (req, res) => {
     }
     // If password is correct, fetch additional user details
     mysqlConnection.query(
-      "CALL balpms.SP_DEPARTMENT_ADMIN_USER_GET(?, ?)",
+      "CALL balcorpdb.SP_KPI_DEPT_ADMIN_USER_GET(?, ?)",
       [userid, inputHash],
       (err, results) => {
         if (err) {
@@ -55,14 +55,14 @@ router.post("/adminlogin", async (req, res) => {
 const getUserPassword = (userid) => {
   return new Promise((resolve, reject) => {
     mysqlConnection.query(
-      "SELECT ADMIN_PWD FROM DEPARTMENT_ADMIN_MASTER WHERE ADMIN_EMPID = ?",
+      "SELECT USER_PWD FROM INTARNET_USER_LOGIN WHERE EMPID = ?",
       [userid],
       (err, results) => {
         if (err) {
           return reject(err); // Handle errors
         }
         if (results.length > 0) {
-          resolve(results[0].ADMIN_PWD); // Return password if found
+          resolve(results[0].USER_PWD); // Return password if found
         } else {
           resolve(null); // Return null if no match
         }
