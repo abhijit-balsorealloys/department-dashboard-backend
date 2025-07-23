@@ -927,4 +927,49 @@ router.get("/getpollresult", async (req, res) => {
     res.status(500).json({ error: "Unable to fetch Poll Result data" });
   }
 });
+//API to fetch KRA Details
+router.get("/kpi/:empid", async (req, res) => {
+  const { empid } = req.params;
+  try {
+    mysqlConnection.query(
+      "CALL balcorpdb.SP_KPI_MASTER_SHOW(?)",
+       [empid],
+      (err, results) => {
+        if (err) {
+          return res.status(500).json({ error: err.message });
+        }
+        res.json(results[0]); // Return user data
+      }
+    );
+  } catch (err) {
+    console.error("❌ Error:", err);
+    res.status(500).json({ error: "Unable to fetch training data" });
+  }
+});
+
+// Submit HR Dashboard Form
+router.post("/hr-dashboard", async (req, res) => {
+  const { month, kpi_desc, uom, hr_target, actual_data } = req.body;
+
+  try {
+    mysqlConnection.query(
+      "CALL balcorpdb.SP_KPI_MASTER_INSERT(?, ?, ?, ?, ?)",
+      [ month, kpi_desc, uom, hr_target, actual_data],
+      async (err, results) => {
+        if (err) {
+          return res.status(500).json({ error: err.message });
+        }
+
+         return res.status(200).json({
+            status: "success",
+            message: "Subitted successfully!",
+            data: results[0],
+          });
+      }
+    );
+  } catch (err) {
+    console.error("❌ Server error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
 module.exports = router;
