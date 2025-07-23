@@ -26,7 +26,7 @@ const mysqlPool = mysql.createPool({
   host: "80.9.2.78",
   user: "corpappdb",
   password: "Bal@12345",
-  database: "balpms",
+  database: "balcorpdb",
 });
 
 //Connect to SQL Server
