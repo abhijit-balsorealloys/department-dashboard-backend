@@ -973,4 +973,23 @@ router.post("/hr-dashboard", uploadHR.none(), async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+//API to fetch 360 KPI details
+router.post("/get-kpi", async (req, res) => {
+  const { userId } = req.body;
+
+  try {
+    mysqlConnection.query(
+      "CALL balcorpdb.SP_KPI_DAILY_ACTUAL_SHOW(?)", [userId],
+      (err, results) => {
+        if (err) {
+          return res.status(500).json({ error: err.message });
+        }
+        res.json(results[0]);
+      }
+    );
+  } catch (err) {
+    console.error("❌ Error:", err);
+    res.status(500).json({ error: "Unable to fetch KPI Datas" });
+  }
+});
 module.exports = router;
