@@ -946,16 +946,14 @@ router.get("/kpi/:empid", async (req, res) => {
     res.status(500).json({ error: "Unable to fetch training data" });
   }
 });
-
 // Submit HR Dashboard Form
 const uploadHR = multer();
 router.post("/hr-dashboard", uploadHR.none(), async (req, res) => {
   const { date, plant_id, func_id, kpi_code, uom, hr_target, actual_data,userId } = req.body;
-
   try {
     mysqlConnection.query(
       "CALL balcorpdb.SP_KPI_DAILY_ACTUAL_INSERT(?, ?, ?, ?, ?, ?, ?, ?)",
-      [ date, plant_id, func_id, kpi_code, uom, hr_target, actual_data, userId ],
+      [date, plant_id, func_id, kpi_code, uom, hr_target, actual_data, userId],
       async (err, results) => {
         if (err) {
           return res.status(500).json({ error: err.message });
@@ -975,7 +973,6 @@ router.post("/hr-dashboard", uploadHR.none(), async (req, res) => {
 //API to fetch 360 KPI details
 router.post("/get-kpi", async (req, res) => {
   const { userId } = req.body;
-
   try {
     mysqlConnection.query(
       "CALL balcorpdb.SP_KPI_DAILY_ACTUAL_SHOW(?)", [userId],
