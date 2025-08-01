@@ -1030,4 +1030,46 @@ router.post("/get-kpiFinance", async (req, res) => {
     res.status(500).json({ error: "Unable to fetch KPI Datas" });
   }
 });
+// Submit Environment Dashboard Form
+const uploadEnvironment = multer();
+router.post("/environment-dashboard", uploadEnvironment.none(), async (req, res) => {
+  const { date, plant_id, func_id, kpi_code, uom, hr_target, actual_data,userId } = req.body;
+  try {
+    mysqlConnection.query(
+      "CALL balcorpdb.SP_KPI_DAILY_ACTUAL_INSERT(?, ?, ?, ?, ?, ?, ?, ?)",
+      [date, plant_id, func_id, kpi_code, uom, hr_target, actual_data, userId],
+      async (err, results) => {
+        if (err) {
+          return res.status(500).json({ error: err.message });
+        }
+         return res.status(200).json({
+            status: "success",
+            message: "Submitted successfully!",
+            data: results[0],
+          });
+      }
+    );
+  } catch (err) {
+    console.error("❌ Server error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+//API to fetch 360 Environment KPI details
+router.post("/get-kpiEnvironment", async (req, res) => {
+  const { userId } = req.body;
+  try {
+    mysqlConnection.query(
+      "CALL balcorpdb.SP_KPI_DAILY_ACTUAL_SHOW(?)", [userId],
+      (err, results) => {
+        if (err) {
+          return res.status(500).json({ error: err.message });
+        }
+        res.json(results[0]);
+      }
+    );
+  } catch (err) {
+    console.error("❌ Error:", err);
+    res.status(500).json({ error: "Unable to fetch KPI Datas" });
+  }
+});
 module.exports = router;
